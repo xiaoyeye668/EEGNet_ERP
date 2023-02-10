@@ -28,7 +28,7 @@ K.set_image_data_format('channels_last')
 #数据处理模式；1/2/others
 READ_FLAG=2
 #数据路径
-raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
+raw_fname = 'data/s24_reference.cnt'
 X_path = 'data/S24_features_pre_12s.pkl'
 y_path = 'data/S24_labels_pre_12s.pkl'
 preprocessed_path = 'data/cleandata_sub24.mat'

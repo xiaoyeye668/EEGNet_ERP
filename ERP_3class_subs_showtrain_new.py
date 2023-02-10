@@ -29,7 +29,6 @@ np.random.seed(SEED)
 # to be explicit in case if the user has changed the default ordering
 K.set_image_data_format('channels_last')
 
-raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
 '''-0.2-1.5s'''
 #CKP_PATH = './tmp/checkpoint_intents_k5_82_17s_batch16.h5'
 #CKP_PATH = './tmp/checkpoint_intents_k12_82_17s_batch16.h5'

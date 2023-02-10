@@ -26,7 +26,7 @@ K.set_image_data_format('channels_last')
 #数据处理模式；1/2/others
 READ_FLAG=2
 #数据路径
-raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
+raw_fname = 'data/s24_reference.cnt'
 X_path = 'data/S24_features_pre_12s.pkl'
 y_path = 'data/S24_labels_pre_12s.pkl'
 #preprocessed_path = 'data/cleandata_sub24.mat'
@@ -34,13 +34,6 @@ y_path = 'data/S24_labels_pre_12s.pkl'
 preprocessed_path = 'enroll_data'
 
 #模型保存路径
-#CKP_PATH = './tmp/checkpoint_intents_k5_82_14s.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k12_82_14s.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_82_14s.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_14s.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_41_14s.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_15s_batch8.h5'
-#CKP_PATH = './save_models/checkpoint_intents_k64_82_15s_batch16.h5'
 CKP_PATH = './save_models/checkpoint_intents_k25_81_15s_batch4_norm_2_noexpand.h5'
 
 #subs = ["sub01", "sub02", "sub03", "sub04", "sub06", 'sub07','sub10','sub11','sub12','sub13','sub24']

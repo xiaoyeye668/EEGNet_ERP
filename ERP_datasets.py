@@ -206,12 +206,10 @@ random.shuffle(index_shuf)
 X = np.array([X[i] for i in index_shuf])
 y = np.array([y[i] for i in index_shuf])
 
-# take 80/20/20 percent of the data to train/validate/test
+# take 90/10/10 percent of the data to train/validate/test
 split_factor = 0.90
 X_train      = X[0:int(X.shape[0]*split_factor),]
 Y_train      = y[0:int(X.shape[0]*split_factor)]
-#X_train      = X
-#Y_train      = y
 X_validate   = X[int(X.shape[0]*split_factor):,]
 Y_validate   = y[int(X.shape[0]*split_factor):]
 X_test       = X[int(X.shape[0]*split_factor):,]
@@ -228,9 +226,9 @@ Y_train      = np_utils.to_categorical(Y_train-2)
 Y_validate   = np_utils.to_categorical(Y_validate-2)
 Y_test       = np_utils.to_categorical(Y_test-2)
 
-#feature_save_path = '/Users/yeye/Downloads/EEG_project/arl-eegmodels/examples/features/'
-#feature_save_path = '/Users/yeye/Downloads/EEG_project/arl-eegmodels/examples/features_scale1000/'
-feature_save_path = '/Users/yeye/Downloads/EEG_project/arl-eegmodels/examples/features_scale1000_cross/'
+#feature_save_path = './features/'
+#feature_save_path = './features_scale1000/'
+feature_save_path = './features_scale1000_cross/'
 
 np.save(feature_save_path+'X_train.npy', X_train)
 np.save(feature_save_path+'Y_train.npy', Y_train)

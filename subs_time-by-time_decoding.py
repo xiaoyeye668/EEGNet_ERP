@@ -57,4 +57,4 @@ from neurora.decoding import tbyt_decoding_kfold
 print(data.shape)
 accs = tbyt_decoding_kfold(data, label, n=3, navg=5, time_win=5, time_step=5, nfolds=3, nrepeats=50, smooth=True)
 print(accs.shape)
-np.savetxt("results_all_norm.txt", accs)
+np.savetxt("results_all.txt", accs)
