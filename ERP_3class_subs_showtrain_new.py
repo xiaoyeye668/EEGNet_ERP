@@ -29,46 +29,24 @@ np.random.seed(SEED)
 # to be explicit in case if the user has changed the default ordering
 K.set_image_data_format('channels_last')
 
+raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
 '''-0.2-1.5s'''
-#CKP_PATH = './tmp/checkpoint_intents_k5_82_17s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k12_82_17s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_82_17s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_17s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k5_42_17s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k5_41_17s_batch16.h5'
-'''-0.2-1.2s'''
-#CKP_PATH = './tmp/checkpoint_intents_k5_82_14s_batch64.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k12_82_14s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_82_14s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_14s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k5_42_14s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k5_41_14s_batch16.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
+
 '''0-1.2s'''
-#CKP_PATH = './tmp/checkpoint_intents_k5_82_12s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k12_82_12s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_82_12s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_12s_batch16.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_12s_batch16_scale1000.h5'
 
 '''0-1.5s'''
-#CKP_PATH = './new_save_models/checkpoint_intents_k25_81_15s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k25_81_15s_batch16_noscale.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k5_82_15s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k5_81_15s_batch16_scale1000.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_15s_batch16_scale1000.h5'
 
 '''0.2-1.5s'''
-#CKP_PATH = './new_save_models/checkpoint_intents_k64_82_13s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k25_82_13s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k12_82_13s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models_cross/checkpoint_intents_k12_82_13s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k5_82_13s_batch16_scale1000.h5'
-#CKP_PATH = './new_save_models/checkpoint_intents_k64_81_13s_batch16_scale1000.h5'
-CKP_PATH = './new_save_models/checkpoint_intents_k64_41_13s_batch16_scale1000.h5'
-
-'''0.4-1.2s'''
-#CKP_PATH = './tmp/checkpoint_intents_k5_82_8s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k12_82_8s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k25_82_8s_batch16.h5'
-#CKP_PATH = './tmp/checkpoint_intents_k64_82_8s_batch16.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_13s_batch16_scale1000.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k25_82_13s_batch16_scale1000.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k12_82_13s_batch16_scale1000.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k5_82_13s_batch16_scale1000.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k64_81_13s_batch16_scale1000.h5'
+#CKP_PATH = './new_save_models/checkpoint_intents_k64_41_13s_batch16_scale1000.h5'
+CKP_PATH = './new_save_models/checkpoint_intents_k64_43_13s_batch16_scale1000.h5'
 
 '''0.4-1.5s'''
 #CKP_PATH = './tmp/checkpoint_intents_k5_82_11s_batch16.h5'
@@ -81,8 +59,12 @@ CKP_PATH = './new_save_models/checkpoint_intents_k64_41_13s_batch16_scale1000.h5
 preprocessed_path = 'enroll_data'
 #feature_path = 'features'
 #feature_path = 'features_scale1000_15s'
-feature_path = 'features_scale1000'
+#feature_path = 'features_scale1000'
 #feature_path = 'features_scale1000_cross'
+#feature_path = './datasets_cross/datasets_cross_13s/'
+#feature_path = './datasets_cross/datasets_cross_17s/'
+#feature_path = './datasets_cross/datasets_cross_15s/'
+feature_path = './datasets_cross/datasets_cross_12s/'
 
 X_train      = np.load(feature_path+ '/' +'X_train.npy')
 Y_train      = np.load(feature_path+ '/' +'Y_train.npy')
@@ -123,13 +105,10 @@ X_validate = X_test
 ############################# EEGNet portion ##################################
 #采样率 500
 #kernels, chans, samples = 1, 60, 851 #-0.2-1.5s
-#kernels, chans, samples = 1, 60, 701 #-0.2-1.2s
-#kernels, chans, samples = 1, 60, 601 #0-1.2s
+kernels, chans, samples = 1, 60, 601 #0-1.2s
 #kernels, chans, samples = 1, 60, 751 #0-1.5s
-kernels, chans, samples = 1, 60, 651 #0.2-1.5s
-#kernels, chans, samples = 1, 60, 401 #0.4-1.2s
-#kernels, chans, samples = 1, 60, 551 #0.4-1.5s
-#kernels, chans, samples = 1, 60, 601 #-0.2-1.s
+#kernels, chans, samples = 1, 60, 651 #0.2-1.5s
+
 
 # convert data to NHWC (trials, channels, samples, kernels) format. Data 
 # contains 60 channels and 151 time-points. Set the number of kernels to 1.
@@ -143,7 +122,7 @@ X_test       = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 #               dropoutRate = 0.5, kernLength = 32, F1 = 8, D = 2, F2 = 16, 
 #               dropoutType = 'Dropout')
 model = EEGNet(nb_classes = 3, Chans = chans, Samples = samples, 
-               dropoutRate = 0.0, kernLength = 64, F1 = 4, D = 1, F2 = 4, 
+               dropoutRate = 0.3, kernLength = 64, F1 = 4, D = 3, F2 = 12, 
                dropoutType = 'Dropout')
 
 # compile the model and set the optimizers
@@ -194,15 +173,19 @@ loss = fittedModel.history['loss']
 val_loss = fittedModel.history['val_loss']
 
 plt.subplot(1, 2, 1)
-plt.plot(acc, label='Training Accuracy')
-plt.plot(val_acc, label='Validation Accuracy')
-plt.title('Training and Validation Accuracy')
+plt.plot(loss, label='Training Loss')
+#plt.plot(acc, label='Training Accuracy')
+plt.plot(val_loss, label='Validation Loss')
+plt.title('Training and Validation Loss')
+#plt.title('Training loss and Accuracy')
 plt.legend()
 
 plt.subplot(1, 2, 2)
-plt.plot(loss, label='Training Loss')
-plt.plot(val_loss, label='Validation Loss')
-plt.title('Training and Validation Loss')
+#plt.plot(val_loss, label='Validation Loss')
+plt.plot(acc, label='Training Accuracy')
+plt.plot(val_acc, label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+#plt.title('Validation Loss and Accuracy')
 plt.legend()
 plt.show()
 
@@ -226,5 +209,7 @@ names = ['JG', 'MM', 'JY']
 plt.figure(0)
 #plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-8,2')
 #plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-8,1')
-plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,1')
+#plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,1')
+plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,3')
+
 plt.show()
