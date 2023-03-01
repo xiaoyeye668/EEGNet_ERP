@@ -26,39 +26,19 @@ np.random.seed(SEED)
 K.set_image_data_format('channels_last')
 
 #模型保存路径
-CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_13s_batch16_scale1000.h5'
-feature_path = './datasets_cross/datasets_cross_13s/'
+CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
+feature_path = './datasets_cross_new/datasets_cross_17s_split90/'
 
 X_test       = np.load(feature_path+ '/' +'X_test.npy')
 Y_test       = np.load(feature_path+ '/' +'Y_test.npy')
    
 print(X_test.shape[0], 'test samples')
-'''
-#归一化
-scaler = StandardScaler()
-num_instances, num_features, num_time_steps = X_train.shape
-X_train = np.reshape(X_train, newshape=(-1, num_features))
-#X_train = scaler.fit_transform(X_train)
-#X_train = np.reshape(X_train, newshape=(num_instances, num_features, num_time_steps))
-scaler.fit_transform(X_train)
-num_instances, num_features, num_time_steps = X_test.shape
-X_test = np.reshape(X_test, newshape=(-1, num_features))
-X_test = scaler.transform(X_test)
-X_test = np.reshape(X_test, newshape=(num_instances, num_features, num_time_steps))
-'''
 
-'''
-#数据随机化
-index_shuf = [i for i in range(X.shape[0])]
-random.shuffle(index_shuf)
-X = np.array([X[i] for i in index_shuf])
-y = np.array([y[i] for i in index_shuf])
-'''
 #采样率 500
-#kernels, chans, samples = 1, 60, 851 #-0.2-1.5s
+kernels, chans, samples = 1, 60, 851 #-0.2-1.5s
 #kernels, chans, samples = 1, 60, 751 #0-1.5s
 #kernels, chans, samples = 1, 60, 401 #0.4-1.2s
-kernels, chans, samples = 1, 60, 651 #0.2-1.5s
+#kernels, chans, samples = 1, 60, 651 #0.2-1.5s
 #kernels, chans, samples = 1, 60, 601 #-0.2-1.s
 
 # convert data to NHWC (trials, channels, samples, kernels) format. Data 
@@ -92,7 +72,7 @@ plt.show()
 
 #print('调用函数auc：', metrics.roc_auc_score(preds, Y_test, multi_class='ovr', average='macro'))
 print('调用函数auc：', metrics.roc_auc_score(preds, Y_test, multi_class='ovr', average='weighted'))
-chance_probs = np.full((509, ), 0.33)
+chance_probs = np.full((394, ), 0.33)
 #print(chance_probs,chance_probs.shape)
 #print(probs.max(axis = -1), probs.max(axis = -1).shape)
 stat, p = wilcoxon(probs.max(axis = -1) , chance_probs)

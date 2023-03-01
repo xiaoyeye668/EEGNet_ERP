@@ -29,9 +29,8 @@ np.random.seed(SEED)
 # to be explicit in case if the user has changed the default ordering
 K.set_image_data_format('channels_last')
 
-raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
 '''-0.2-1.5s'''
-#CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
 
 '''0-1.2s'''
 #CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_12s_batch16_scale1000.h5'
@@ -46,7 +45,7 @@ raw_fname = '/Users/yeye/Downloads/code/s24_reference.cnt'
 #CKP_PATH = './save_models_cross/checkpoint_intents_k5_82_13s_batch16_scale1000.h5'
 #CKP_PATH = './save_models_cross/checkpoint_intents_k64_81_13s_batch16_scale1000.h5'
 #CKP_PATH = './new_save_models/checkpoint_intents_k64_41_13s_batch16_scale1000.h5'
-CKP_PATH = './new_save_models/checkpoint_intents_k64_43_13s_batch16_scale1000.h5'
+#CKP_PATH = './new_save_models/checkpoint_intents_k64_43_13s_batch16_scale1000.h5'
 
 '''0.4-1.5s'''
 #CKP_PATH = './tmp/checkpoint_intents_k5_82_11s_batch16.h5'
@@ -54,17 +53,7 @@ CKP_PATH = './new_save_models/checkpoint_intents_k64_43_13s_batch16_scale1000.h5
 #CKP_PATH = './tmp/checkpoint_intents_k25_82_11s_batch16.h5'
 #CKP_PATH = './tmp/checkpoint_intents_k64_82_11s_batch16.h5'
 
-#preprocessed_path = 'data/cleandata_sub24.mat'
-#preprocessed_path = 'data'
-preprocessed_path = 'enroll_data'
-#feature_path = 'features'
-#feature_path = 'features_scale1000_15s'
-#feature_path = 'features_scale1000'
-#feature_path = 'features_scale1000_cross'
-#feature_path = './datasets_cross/datasets_cross_13s/'
-#feature_path = './datasets_cross/datasets_cross_17s/'
-#feature_path = './datasets_cross/datasets_cross_15s/'
-feature_path = './datasets_cross/datasets_cross_12s/'
+feature_path = './datasets_cross_new/datasets_cross_17s_split90/'
 
 X_train      = np.load(feature_path+ '/' +'X_train.npy')
 Y_train      = np.load(feature_path+ '/' +'Y_train.npy')
@@ -76,36 +65,11 @@ Y_test       = np.load(feature_path+ '/' +'Y_test.npy')
 print('X_train shape:', X_train.shape)
 print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
-'''
-#归一化-1
-scaler = StandardScaler()
-num_instances, num_features, num_time_steps = X_train.shape
-X_train = np.reshape(X_train, newshape=(-1, num_features))
-X_train = scaler.fit_transform(X_train)
-X_train = np.reshape(X_train, newshape=(num_instances, num_features, num_time_steps))
-
-num_instances, num_features, num_time_steps = X_test.shape
-X_test = np.reshape(X_test, newshape=(-1, num_features))
-X_test = scaler.transform(X_test)
-X_test = np.reshape(X_test, newshape=(num_instances, num_features, num_time_steps))
-X_validate = X_test
-'''
-'''
-#归一化-2
-scalers = {}
-for i in range(X_train.shape[1]):
-    scalers[i] = StandardScaler()
-    X_train[:, i, :] = scalers[i].fit_transform(X_train[:, i, :]) 
-
-for i in range(X_test.shape[1]):
-    X_test[:, i, :] = scalers[i].transform(X_test[:, i, :]) 
-X_validate = X_test
-'''
 
 ############################# EEGNet portion ##################################
 #采样率 500
-#kernels, chans, samples = 1, 60, 851 #-0.2-1.5s
-kernels, chans, samples = 1, 60, 601 #0-1.2s
+kernels, chans, samples = 1, 60, 851 #-0.2-1.5s
+#kernels, chans, samples = 1, 60, 601 #0-1.2s
 #kernels, chans, samples = 1, 60, 751 #0-1.5s
 #kernels, chans, samples = 1, 60, 651 #0.2-1.5s
 
@@ -122,7 +86,7 @@ X_test       = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 #               dropoutRate = 0.5, kernLength = 32, F1 = 8, D = 2, F2 = 16, 
 #               dropoutType = 'Dropout')
 model = EEGNet(nb_classes = 3, Chans = chans, Samples = samples, 
-               dropoutRate = 0.3, kernLength = 64, F1 = 4, D = 3, F2 = 12, 
+               dropoutRate = 0.3, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
                dropoutType = 'Dropout')
 
 # compile the model and set the optimizers
@@ -131,8 +95,6 @@ model = EEGNet(nb_classes = 3, Chans = chans, Samples = samples,
 adam = optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.99, epsilon=None, decay=0.0, amsgrad=False)
 model.compile(loss='categorical_crossentropy', optimizer=adam, 
              metrics = ['accuracy'])
-#sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-#model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
 # count number of parameters in the model
 #numParams  = model.count_params()  
@@ -191,8 +153,6 @@ plt.show()
 
 # load optimal weights
 model.load_weights(CKP_PATH)
-# WEIGHTS_PATH = /path/to/EEGNet-8-2-weights.h5 
-# model.load_weights(WEIGHTS_PATH)
 
 ###############################################################################
 # make prediction on test set.
@@ -207,9 +167,9 @@ print("Classification accuracy: %f " % (acc))
 # plot the confusion matrices for both classifiers
 names = ['JG', 'MM', 'JY']
 plt.figure(0)
-#plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-8,2')
+plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-8,2')
 #plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-8,1')
 #plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,1')
-plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,3')
+#plot_confusion_matrix(preds, Y_test.argmax(axis = -1), names, title = 'EEGNet-4,3')
 
 plt.show()
