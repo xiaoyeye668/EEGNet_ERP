@@ -155,11 +155,11 @@ for classes in np.arange(1,diff):
     # 这里，对试次与导联维度平均传入tfr变量中
     tfr[classes-1] = np.average(subtfr, axis=0)
     # 基线校正，这里使用'logratio'方法，即除以基线均值并取log
-    # 取基线为-200到0ms
+    # 取基线为-100到0ms
     for chl in range(1):    
         for freq in range(len(freqs)):
             tfr[classes-1,chl,freq] = 10 * np.log10(tfr[classes-1, chl, freq] / 
-                                np.average(tfr[classes-1, chl, freq, :200]))
+                                np.average(tfr[classes-1, chl, freq, 50:100]))
     print('<<<<<<<<<<<<<<< tfr ', tfr.shape)
 
 def plot_tfr_results_2(tfr, freqs, times, clim=[-4, 8]):
