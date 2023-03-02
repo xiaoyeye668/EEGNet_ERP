@@ -27,7 +27,7 @@ K.set_image_data_format('channels_last')
 
 #模型保存路径
 CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
-feature_path = './datasets_cross_new/datasets_cross_17s_split90/'
+feature_path = './datasets_cross_new/datasets_cross_17s_split85/'
 
 X_test       = np.load(feature_path+ '/' +'X_test.npy')
 Y_test       = np.load(feature_path+ '/' +'Y_test.npy')

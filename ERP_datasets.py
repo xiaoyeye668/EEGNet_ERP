@@ -169,7 +169,7 @@ else:
     with open(y_path, 'wb') as fy:
         pickle.dump(y, fy)
 
-X_train,X_test,y_train,y_test = train_test_split(X,y,train_size = 0.9, random_state=8, stratify=y)
+X_train,X_test,y_train,y_test = train_test_split(X,y,train_size = 0.85, random_state=1)
 X_validate, y_validate = X_test, y_test
 
 # convert labels to one-hot encodings.
@@ -177,7 +177,7 @@ Y_train      = np_utils.to_categorical(y_train-2)
 Y_validate   = np_utils.to_categorical(y_validate-2)
 Y_test       = np_utils.to_categorical(y_test-2)
 
-feature_save_path = './datasets_cross_new/datasets_cross_17s_split90/'
+feature_save_path = './datasets_cross_new/datasets_cross_17s_split85/'
 
 np.save(feature_save_path+'X_train.npy', X_train)
 np.save(feature_save_path+'Y_train.npy', Y_train)

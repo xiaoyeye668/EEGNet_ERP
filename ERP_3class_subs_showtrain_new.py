@@ -53,7 +53,7 @@ CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.
 #CKP_PATH = './tmp/checkpoint_intents_k25_82_11s_batch16.h5'
 #CKP_PATH = './tmp/checkpoint_intents_k64_82_11s_batch16.h5'
 
-feature_path = './datasets_cross_new/datasets_cross_17s_split90/'
+feature_path = './datasets_cross_new/datasets_cross_17s_split85/'
 
 X_train      = np.load(feature_path+ '/' +'X_train.npy')
 Y_train      = np.load(feature_path+ '/' +'Y_train.npy')
