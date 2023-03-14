@@ -81,7 +81,7 @@ filter_weight = filter_weight.reshape(8,60,2)
 #filter_weight = filter_weight.reshape(4,60,3)
 #filter_weight = filter_weight.reshape(6,60,3)
 print(filter_weight.shape)
-
+"""
 import mne
 from mne import io, pick_types, read_events, Epochs, EvokedArray
 event_id = dict(weight=0)
@@ -97,7 +97,7 @@ ch_names = list(ch_names)
 ch_names.remove('COMNT')
 ch_names.remove('SCALE')
 ch_names.reverse()
-print(len(ch_names))
+
 #ch_names = [str(i) for i in range(1,61)] #通道名称
 sfreq = 500 #采样率
 montage = mne.channels.make_standard_montage("standard_1020")
@@ -120,24 +120,17 @@ for ii in np.arange(1,n_filter+1):
     axes[ii-1].set(ylabel='spatial filter {}'.format(ii))
 fig.tight_layout(h_pad=1.0, w_pad=1.0, pad=0.1)
 plt.show()
-
-#print(dense_layer.output, dense_layer.output.shape, type(dense_layer.output))
-#dense_layer_output = np.array(dense_layer.output)
-# 0-3098;2595 1-3040 2-2193
-test_1, test_2, test_3 = X_train[3098], X_train[3040], X_train[2193]
-print(Y_train[3098], Y_train[3040], Y_train[2193])
-X = np.asarray([test_1, test_2, test_3])
-
+"""
 #TP_index  = np.argwhere(preds == Y_test.argmax(axis=-1))
 #X, Y = X_test[TP_index].reshape(TP_index.shape[0], chans, samples, kernels), Y_test[TP_index]
 #JG:34; MM:28; JY:38
 X,Y = X_train[:],Y_train[:]
 print('<<<<<<<< X ', X.shape)
 
-
 from tensorflow.keras.models import Model
 from mne.time_frequency import tfr_array_morlet
-from neurora.stuff import clusterbased_permutation_2d_1samp_2sided, clusterbased_permutation_2d_2sided
+#from neurora.stuff import clusterbased_permutation_2d_1samp_2sided, clusterbased_permutation_2d_2sided
+from stuff import clusterbased_permutation_2d_2sided, clusterbased_permutation_2d_1samp_2sided
 #print(preds,preds.shape)
 #取某一层的输出为输出新建为model，采用函数模型
 def depthwise_output_byclass(class_index, x, y, model):
@@ -155,24 +148,11 @@ def tfr_byclass(class_out_data, samples):
 
     for i in range(len(class_out_data)):
         #out shape:(None, 1, 851, 16)
-        data = class_out_data[i,:,:,4:5].reshape((1,1,samples)) #(n_epochs, n_chans, n_times)
+        data = class_out_data[i,:,:,10:11].reshape((1,1,samples)) #(n_epochs, n_chans, n_times)
         # 设定一些时频分析的参数
         # 频段选取0.1-32Hz
         freqs = np.arange(2, 32, 2)
         n_cycles = np.array([1]+[i for i in np.arange(4, 21, 2)/3]+[8]*(int(freqs[-1]-21)//2+1))
-        #freqs = np.arange(2, 44, 2)
-        # 频段选取4-40Hz
-        #freqs = np.arange(4, 40, 2)
-        #n_cycles = np.array([i for i in np.arange(4, 18, 2)/3]+[7]*(int(freqs[-1]-18)//2+1))
-        #freqs = np.arange(7, 49, 2)
-        #freqs = np.arange(0.1, 52, 2)
-        #n_cycles = freqs / 2.
-        #n_cycles = np.array([i for i in np.arange(1.5,7,(7-1.5)/10)]+[7]*(int(freqs[-1]-20)//2+1))
-        #n_cycles = np.array([i for i in np.arange(2, 12, 2)/2]+[8]*(int(freqs[-1]-12)//2+1))
-        #n_cycles = np.array([i for i in np.arange(7, 17, 2)/2]+[9]*(int(freqs[-1]-17)//2+1))
-        #print('<<<<<<<<<')
-        #print(freqs,freqs.shape)
-        #print(n_cycles,n_cycles.shape)
         # 时频分析
         # 使用MNE的time_frequency模块下的tfr_arrayy_morlet()函数
         # 其输入为[n_epochs, n_channels, n_times]的array
@@ -214,16 +194,16 @@ def plot_tfr_results(tfr, freqs, times, p=0.01, clusterp=0.05, clim=[-4, 4]):
     # 该矩阵中不显著的点的值为0，显著大于0的点的值为1，显著小于0的点的值为-1
     # 这里iter设成100是为了示例运行起来快一些，建议1000
     stats_results = clusterbased_permutation_2d_1samp_2sided(tfr, 0, 
-                                                        p_threshold=p,
-                                                        clusterp_threshold=clusterp,
-                                                        iter=1000)
+                                                        p_threshold=p, iter=1000)
+                                                        #clusterp_threshold=clusterp,
+                                                        
     #print('<<<<<<<<<<<stats_results ', stats_results)                                                    
     
     # 时频分析结果可视化
     fig, ax = plt.subplots(1, 1)
     # 勾勒显著性区域
     padsats_results = np.zeros([n_freqs + 2, n_times + 2])
-    print(padsats_results.shape,stats_results.shape)
+    #print(padsats_results.shape,stats_results.shape)
     padsats_results[1:n_freqs + 1, 1:n_times + 1] = stats_results
     #padsats_results[:n_freqs, :n_times + 1] = stats_results
     x = np.concatenate(([times[0]-1], times, [times[-1]+1]))
@@ -267,17 +247,13 @@ times = np.arange(200, 1200, 2)
 print('<<<<<<<<<<<<<<<')
 print(freqs.shape, times.shape)
 
-class_JY_out, class_JY_label = depthwise_output_byclass(2, X, Y, model)
-class_MM_out, class_MM_label = depthwise_output_byclass(1, X, Y, model)
 class_JG_out, class_JG_label = depthwise_output_byclass(0, X, Y, model)
+class_MM_out, class_MM_label = depthwise_output_byclass(1, X, Y, model)
+class_JY_out, class_JY_label = depthwise_output_byclass(2, X, Y, model)
 tfr_JG = tfr_byclass(class_JG_out, samples)
 tfr_MM = tfr_byclass(class_MM_out, samples)
 tfr_JY = tfr_byclass(class_JY_out, samples)
 
-#show_list = [1,2]
-#for i in show_list:
-#    tfr_diff = tfr[i-1:i, 0, :, :651]
-    #plot_tfr_results_2(tfr_diff, freqs, times, clim=[-10, 10])
 #tfr = tfr_JG[:,0,:, 100:600]   #0.4-1.4s #0.3-1.4s
 #tfr = tfr_JG[:,0,:, 200:800]       #0.2-1.4s
 #tfr = tfr_JG[:,0,:, 100:800]    #-0.-1.4s
@@ -290,9 +266,8 @@ tfr = tfr_JY[:,0,:, 250:750]
 #plot_tfr_results_2(tfr, freqs, times, clim=[-2, 2])
 
 
-
 def plot_tfr_diff_results(tfr1, tfr2, freqs, times, p=0.01, clusterp=0.05, 
-                          clim=[-2, 2]):
+                          threshold=6.0, clim=[-2, 2]):
     
     """
     参数：
@@ -315,25 +290,33 @@ def plot_tfr_diff_results(tfr1, tfr2, freqs, times, p=0.01, clusterp=0.05,
     # 该矩阵中不显著的点的值为0，条件1显著大于条件2的点的值为1，条件1显著小于条件2的点的值为-1
     # 这里iter设成100是为了示例运行起来快一些，建议1000
     #print(tfr1.shape,tfr2.shape)
-    stats_results = clusterbased_permutation_2d_2sided(tfr1, tfr2, 
-                                                       p_threshold=p,
+    stats_results, cluster_n1, cluster_n2 = clusterbased_permutation_2d_2sided(tfr1, tfr2, 
+                                                       p_threshold=p, 
                                                        clusterp_threshold=clusterp,
+                                                       threshold=threshold,
                                                        iter=1000)
-    
+                                                       
     # 计算△tfr
     tfr_diff = tfr1 - tfr2
     
     # 时频分析结果可视化
     fig, ax = plt.subplots(1, 1)
     # 勾勒显著性区域
-    padsats_results = np.zeros([n_freqs + 2, n_times + 2])
-    padsats_results[1:n_freqs + 1, 1:n_times + 1] = stats_results
+    #padsats_results = np.zeros([n_freqs + 2, n_times + 2])
+    #padsats_results[1:n_freqs + 1, 1:n_times + 1] = stats_results
+    padsats_results = np.zeros([n_freqs, n_times + 2])
+    padsats_results[:n_freqs, 1:n_times + 1] = stats_results
     x = np.concatenate(([times[0]-1], times, [times[-1]+1]))
-    y = np.concatenate(([freqs[0]-1], freqs, [freqs[-1]+1]))
+    #y = np.concatenate(([freqs[0]-1], freqs, [freqs[-1]+1]))
+    y = freqs
     X, Y = np.meshgrid(x, y)
-    ax.contour(X, Y, padsats_results, [0.5], colors="red", alpha=0.9, 
+    #print(np.where(padsats_results==1)[0], np.where(padsats_results==-1)[0])
+    if len(np.where(padsats_results>0.5)[0]) > 0:
+        ax.contour(X, Y, padsats_results, [0.5], colors="maroon", alpha=1.0, 
                linewidths=2, linestyles="dashed")
-    ax.contour(X, Y, padsats_results, [-0.5], colors="blue", alpha=0.9,
+
+    if len(np.where(padsats_results<-0.5)[0]) > 0:
+        ax.contour(X, Y, padsats_results, [-0.5], colors="darkblue", alpha=1.0,
                linewidths=2, linestyles="dashed")
     # 绘制时频结果热力图
     im = ax.imshow(np.average(tfr_diff, axis=0), cmap='RdBu_r', origin='lower', 
@@ -345,27 +328,18 @@ def plot_tfr_diff_results(tfr1, tfr2, freqs, times, p=0.01, clusterp=0.05,
     ax.set_ylabel('Frequency (Hz)')
     plt.show()
 
-#freqs = np.arange(4, 32, 2)
-#times = np.arange(-200, 1000, 4)
-#freqs = np.arange(0.1, 32, 2)
-#times = np.arange(400, 1300, 2)
-#tfr_JG = tfr_byclass(class_JG_out)
-#tfr_MM = tfr_byclass(class_MM_out)
-
-#tfr1 = tfr_JG[:70,0,:, 100:600].squeeze()   #0.4-1.4s
-#tfr2 = tfr_MM[:,0,:, 100:600].squeeze()
-#tfr1 = tfr_JG[:70,0,:, 200:800].squeeze()
-#tfr2 = tfr_MM[:70,0,:, 200:800].squeeze()
-#tfr1 = tfr_JG[:,0,:, 100:600].squeeze()   #0.4-1.4s
-#tfr2 = tfr_MM[:29,0,:, 100:800].squeeze()  0-1.4s
 tfr1 = tfr_JG[:1000,0,:, 250:750].squeeze()   #补后 0.2-1.2s
 tfr2 = tfr_MM[:1000,0,:, 250:750].squeeze()
 tfr3 = tfr_JY[:1000,0,:, 250:750].squeeze()
-print(tfr1.shape, tfr2.shape,tfr3.shape)
+
 plot_tfr_diff_results(tfr1, tfr2, freqs, times, 
-                      p=0.025, clusterp=0.05, clim=[-2, 2])
+                      p=0.01, clusterp=0.025, threshold=100.0,clim=[-2, 2])
 plot_tfr_diff_results(tfr3, tfr2, freqs, times, 
-                      p=0.025, clusterp=0.05, clim=[-2, 2])
+                      p=0.01, clusterp=0.025, threshold=100.0,clim=[-2, 2])
+#plot_tfr_diff_results(tfr1, tfr2, freqs, times, 
+#                      p=0.025, clusterp=0.05, clim=[-2, 2])
+#plot_tfr_diff_results(tfr3, tfr2, freqs, times, 
+#                      p=0.025, clusterp=0.05, clim=[-2, 2])
 #plot_tfr_diff_results(tfr1, tfr3, freqs, times, 
 #                      p=0.05, clusterp=0.025, clim=[-2, 2])
 
