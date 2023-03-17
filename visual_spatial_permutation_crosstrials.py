@@ -26,6 +26,9 @@ CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.
 #CKP_PATH = './save_models_cross/checkpoint_intents_k64_43_12s_batch16_scale1000.h5'
 #CKP_PATH = './save_models_cross/checkpoint_intents_k125_82_13s_batch16_scale1000.h5'
 #CKP_PATH = './save_models_cross/checkpoint_intents_k250_63_13s_batch16_scale1000.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k125_82_17s_split90_batch16_noscale.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling2.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling4.h5'
 
 
 #Load test dataset
@@ -46,7 +49,7 @@ X_test       = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 print(X_test.shape[0], 'test samples') 
 
 model = EEGNet(nb_classes = 3, Chans = chans, Samples = samples, 
-               dropoutRate = 0.3, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
+               dropoutRate = 0.3, kernLength = 125, F1 = 8, D = 2, F2 = 16, 
                dropoutType = 'Dropout')
 print(model.summary())
 # load optimal weights
@@ -106,7 +109,7 @@ montage = mne.channels.make_standard_montage("standard_1020")
 tmp_info = mne.create_info(ch_names=ch_names, sfreq=500, ch_types = "eeg") #创建信号的信息
 
 for ii in np.arange(1,n_filter+1):
-    pattern_evoked = EvokedArray(filter_weight[ii-1:ii,:,1:2].reshape(60,1), tmp_info)
+    pattern_evoked = EvokedArray(filter_weight[ii-1,:,1:2].reshape(60,1), tmp_info)
     #print(pattern_evoked.info)
     pattern_evoked.set_montage(montage)
     #pattern_evoked.set_montage(montage,on_missing='warn')
@@ -333,9 +336,9 @@ tfr2 = tfr_MM[:1000,0,:, 250:750].squeeze()
 tfr3 = tfr_JY[:1000,0,:, 250:750].squeeze()
 
 plot_tfr_diff_results(tfr1, tfr2, freqs, times, 
-                      p=0.01, clusterp=0.025, threshold=100.0,clim=[-2, 2])
+                      p=0.025, clusterp=0.05, threshold=100.0,clim=[-2, 2])
 plot_tfr_diff_results(tfr3, tfr2, freqs, times, 
-                      p=0.01, clusterp=0.025, threshold=100.0,clim=[-2, 2])
+                      p=0.025, clusterp=0.05, threshold=100.0,clim=[-2, 2])
 #plot_tfr_diff_results(tfr1, tfr2, freqs, times, 
 #                      p=0.025, clusterp=0.05, clim=[-2, 2])
 #plot_tfr_diff_results(tfr3, tfr2, freqs, times, 
