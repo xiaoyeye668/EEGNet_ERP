@@ -21,8 +21,10 @@ K.set_image_data_format('channels_last')
 
 #CKP_PATH = './save_models_cross/checkpoint_intents_k64_82_17s_batch16_scale1000.h5'
 #CKP_PATH = './save_models_cross/checkpoint_intents_k125_82_17s_batch16_scale1000.h5'
-CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling2.h5'
-#CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling4.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling2.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_2ndPooling4.h5'
+CKP_PATH = './save_models_cross/checkpoint_intents_k250_52_17s_batch16_scale1000_1stPooling16_2ndPooling4.h5'
+#CKP_PATH = './save_models_cross/checkpoint_intents_k250_42_17s_batch16_scale1000_1stPooling16_2ndPooling2.h5'
 
 #Load test dataset
 test_titles = ['JG', 'MM', 'JY']
@@ -42,7 +44,7 @@ X_test       = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 print(X_test.shape[0], 'test samples') 
 
 model = EEGNet(nb_classes = 3, Chans = chans, Samples = samples, 
-               dropoutRate = 0.25, kernLength = 250, F1 = 4, D = 2, F2 = 8, 
+               dropoutRate = 0.25, kernLength = 250, F1 = 5, D = 2, F2 = 10, 
                dropoutType = 'Dropout')
 print(model.summary())
 # load optimal weights
@@ -59,9 +61,13 @@ chance_probs = np.full((509, ), 0.33)
 #print(probs.max(axis = -1), probs.max(axis = -1).shape)
 stat, p = wilcoxon(probs.max(axis = -1) , chance_probs)
 print('stat=%.4f, p=%.4f' % (stat, p))
+if p > 0.05/509:
+    print('Probably the same distribution')
+else:
+    print('Probably different distributions')
 #n_filter = 8
-n_filter = 4
-#n_filter = 6
+#n_filter = 4
+n_filter = 5
 dense_layer = model.get_layer(name='depthwise_conv2d')
 #dense_layer = model.get_layer(index=-1)
 print(dense_layer.name)
@@ -71,7 +77,7 @@ for weight in dense_layer.weights:
 
 #filter_weight = filter_weight.reshape(4,60,1)
 #filter_weight = filter_weight.reshape(8,60,2)
-filter_weight = filter_weight.reshape(4,60,2)
+filter_weight = filter_weight.reshape(5,60,2)
 #filter_weight = filter_weight.reshape(6,60,3)
 print(filter_weight.shape)
 
@@ -87,11 +93,13 @@ ch_names = np.loadtxt('Xiaoqing60_AF7.txt', dtype=str, usecols=-1)
 ch_names = list(ch_names)
 ch_names.remove('COMNT')
 ch_names.remove('SCALE')
-ch_names.reverse()
+#ch_names.reverse()
 print(len(ch_names))
 #ch_names = [str(i) for i in range(1,61)] #通道名称
 sfreq = 500 #采样率
 montage = mne.channels.make_standard_montage("standard_1020")
+montage = mne.channels.read_custom_montage('Xiaoqing60_AF7.xyz')
+
 #info = mne.create_info(ch_names=montage.ch_names, sfreq=500, ch_types = "eeg") #创建信号的信息
 tmp_info = mne.create_info(ch_names=ch_names, sfreq=500, ch_types = "eeg") #创建信号的信息
 
@@ -99,11 +107,14 @@ for ii in np.arange(1,n_filter+1):
     #pattern_evoked = EvokedArray(filter_weight[ii-1:ii].reshape(60,1), tmp_info, tmin=0)
     pattern_evoked = EvokedArray(filter_weight[ii-1,:,1:2].reshape(60,1), tmp_info)   
     #print(pattern_evoked.info)
+    #pattern_evoked.plot_sensors()
     pattern_evoked.set_montage(montage)
+    
     pattern_evoked.plot_topomap(
         times=0.0,
         time_format=' %d' if ii == 0 else '', colorbar=False,
         show_names=False, axes=axes[ii-1], show=False)
+        #show_names=False, axes=axes[ii-1], show=False,  outlines='head',sphere='auto')
     axes[ii-1].set(ylabel='spatial filter {}'.format(ii))
 fig.tight_layout(h_pad=1.0, w_pad=1.0, pad=0.1)
 plt.show()
@@ -126,8 +137,8 @@ kernLength , fs = 250, 500
 #temp_filter_weight = filter_weight.reshape(n_filter,kernLength)
 temp_filter_weight = filter_weight.reshape(n_filter,kernLength)
 
-f, ax = plt.subplots(nrows=1, ncols=4, figsize=(12, 4))
-#f, ax = plt.subplots(nrows=2, ncols=4, figsize=(12, 8))
+#f, ax = plt.subplots(nrows=1, ncols=4, figsize=(12, 4))
+f, ax = plt.subplots(nrows=1, ncols=5, figsize=(12, 4))
 #f, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 8))
 x = np.linspace(0, kernLength/fs, kernLength)
 
@@ -136,11 +147,12 @@ for i in np.arange(1,n_filter+1):
     ax[i-1].set_xlim(0,kernLength/fs)
     #print(temp_filter_weight[i-1:i,:].shape)
     y = temp_filter_weight[i-1:i].squeeze()
-    y_smoothed = gaussian_filter1d(y, sigma=4)
+    y_smoothed = gaussian_filter1d(y, sigma=6)
     ax[i-1].set_ylim(-0.15, 0.15)
     ax[i-1].plot(x, y_smoothed, color='blue', linewidth=1)
     #ax[i-1].plot(x, temp_filter_weight[i-1:i].squeeze(), color='blue', linewidth=1)
     #ax[i].axis('off')
+
 '''
 for i in np.arange(1,3):
     for j in np.arange(1,5):
